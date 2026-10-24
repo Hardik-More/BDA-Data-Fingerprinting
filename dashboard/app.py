@@ -15,6 +15,7 @@ if str(BASE_DIR) not in sys.path:
 
 from src.upload_health import analyze_uploaded_csv, create_spark_session
 from src.mongo_store import load_recent_reports, save_report
+from src.ml_anomaly import run_behavioral_anomaly_model
 
 LOGGER = logging.getLogger(__name__)
 
@@ -93,6 +94,7 @@ st.sidebar.caption("Genuine 2022 purchase records only")
 st.sidebar.divider()
 st.sidebar.write("Apache Spark / PySpark")
 st.sidebar.write("Parquet")
+st.sidebar.write("Spark MLlib")
 st.sidebar.write("MongoDB Atlas / NoSQL")
 st.sidebar.write("Streamlit")
 
@@ -371,7 +373,33 @@ st.line_chart(trend[["Behavioral Similarity Score"]], height=320)
 st.caption("Prototype thresholds: ≥80 Normal, 55–79.99 Moderate Drift, and <55 Major Drift. These are configurable monitoring rules, not universal standards.")
 
 st.divider()
-st.header("IMPLEMENTATION 3 — MongoDB Atlas / NoSQL Report History")
+st.header("IMPLEMENTATION 3 — ML Behavioral Anomaly Detection")
+st.caption("A Spark ML model learns weekly behavioral groups and flags unusually distant observations.")
+if st.button("Run Spark ML Anomaly Model"):
+    try:
+        with st.spinner("Training KMeans model with Spark ML..."):
+            ml_spark = get_spark_session()
+            ml_result = run_behavioral_anomaly_model(ml_spark, behavioral)
+        st.session_state["ml_anomaly_result"] = ml_result
+    except Exception as exc:
+        st.error(f"Unable to run the Spark ML model: {type(exc).__name__}: {exc}")
+
+ml_result = st.session_state.get("ml_anomaly_result")
+if ml_result:
+    x1, x2, x3 = st.columns(3)
+    x1.metric("Algorithm", "KMeans k=2")
+    x2.metric("Anomalous Weeks", ml_result["anomaly_count"])
+    x3.metric("ML Threshold", ml_result["threshold"])
+    st.dataframe(pd.DataFrame(ml_result["rows"]), use_container_width=True, hide_index=True)
+    st.caption(
+        f"Spark ML used {ml_result['feature_count']} standardized behavioral features. "
+        "ANOMALOUS means the observation is at or above the prototype 95th-percentile distance threshold."
+    )
+else:
+    st.info("Click 'Run Spark ML Anomaly Model' to generate learned anomaly scores and classifications.")
+
+st.divider()
+st.header("IMPLEMENTATION 4 — MongoDB Atlas / NoSQL Report History")
 st.caption("Document-based persistence for uploaded-dataset health reports and alert-event history.")
 m1, m2, m3 = st.columns(3)
 m1.metric("Storage Model", "Document / NoSQL")

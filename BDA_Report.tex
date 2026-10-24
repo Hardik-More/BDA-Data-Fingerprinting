@@ -130,15 +130,12 @@ The main objectives of the proposed system are:
 
 
 \renewcommand{\arraystretch}{1.2}
-\begin{longtable}{|p{1.5cm}|p{3.0cm}|p{2.5cm}|p{3.5cm}|p{3.0cm}|}
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{1.5cm}|p{3.0cm}|p{2.5cm}|p{3.5cm}|p{3.0cm}|}
 \hline
 \textbf{Sr.No.} & \textbf{Publication} & \textbf{Focus} & \textbf{Reported contribution / observation} & \textbf{Relevance}\\
 \hline
-\endfirsthead
-\hline
-\textbf{Sr.No.} & \textbf{Publication} & \textbf{Focus} & \textbf{Reported contribution / observation} & \textbf{Relevance}\\
-\hline
-\endhead
 1 & Abedjan, Golab and Naumann (2017), \textit{Data Profiling: A Tutorial} \cite{abedjan2017} & Data profiling & Presents methods for discovering and summarising data properties; it is a tutorial rather than one benchmark experiment. & Supports extracting structural and quality properties into a fingerprint.\\
 \hline
 2 & Batini and Scannapieco (2006), \textit{Data Quality: Concepts, Methodologies and Techniques} \cite{batini2006} & Data-quality assessment & Discusses the multidimensional nature of data quality and methods for its assessment and improvement. & Motivates combining multiple indicators.\\
@@ -151,8 +148,9 @@ The main objectives of the proposed system are:
 \hline
 6 & Abedjan, Golab and Naumann (2015), \textit{Profiling Relational Data: A Survey} \cite{abedjan2015} & Relational data profiling & Surveys profiling tasks and techniques for discovering properties and relationships in relational data. & Provides additional background for systematic dataset profiling.\\
 \hline
+\end{tabular}
 \caption{Summary of Literature Relevant to the Proposed System}\label{tab:literature_review}
-\end{longtable}
+\end{table}
 
 Table~\ref{tab:literature_review} summarizes the main findings, techniques, limitations, and relevance of previous studies. The review motivates the combination of scalable Spark processing, data-quality profiling, historical comparison, and behavioral anomaly detection in the proposed system.
 

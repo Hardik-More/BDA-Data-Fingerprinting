@@ -48,6 +48,34 @@
 \begin{document}
 \pagenumbering{roman}
 
+% -------------------- Front page --------------------
+\begin{titlepage}
+\centering
+\vspace*{1.2cm}
+{\Large\textbf{BDA Project Report}}\\[1.2cm]
+{\LARGE\textbf{Intelligent Big Data Quality and Behavioral Drift Monitoring System using PySpark and Spark ML}}\\[1.5cm]
+{\large Submitted by}\\[0.4cm]
+{\large\textbf{[Student Name]}}\\[0.8cm]
+{\large Guided by: \textbf{[Faculty Name]}}\\[1.2cm]
+{\large Department of Electronics \& Computer Science}\\
+{\large B.E. ECS}\\[1.2cm]
+{\large [College / University Name]}\\[1.2cm]
+{\large Academic Year 2026--2027}
+\vfill
+\end{titlepage}
+
+\chapter*{Certificate}
+\addcontentsline{toc}{chapter}{Certificate}
+This is to certify that the BDA Project entitled \textit{Intelligent Big Data Quality and Behavioral Drift Monitoring System using PySpark and Spark ML} has been carried out by \textbf{[Student Name]} under the guidance of \textbf{[Faculty Name]} in partial fulfilment of the requirements for the B.E. ECS programme.
+
+\vspace{2cm}
+\begin{tabular}{p{6cm}p{6cm}}
+\textbf{Project Guide} & \textbf{Head of Department}\\[1.5cm]
+\textbf{[Faculty Name]} & \textbf{[HOD Name]}\\
+\end{tabular}
+
+\clearpage
+
 
 
 
@@ -103,6 +131,7 @@ The main objectives of the proposed system are:
 
 \renewcommand{\arraystretch}{1.2}
 \begin{longtable}{|p{1.5cm}|p{3.0cm}|p{2.5cm}|p{3.5cm}|p{3.0cm}|}
+\caption{Summary of Literature Relevant to the Proposed System}\label{tab:literature_review}\\
 \hline
 \textbf{Sr.No.} & \textbf{Publication} & \textbf{Focus} & \textbf{Reported contribution / observation} & \textbf{Relevance}\\
 \hline
@@ -124,6 +153,14 @@ The main objectives of the proposed system are:
 6 & Abedjan, Golab and Naumann (2015), \textit{Profiling Relational Data: A Survey} \cite{abedjan2015} & Relational data profiling & Surveys profiling tasks and techniques for discovering properties and relationships in relational data. & Provides additional background for systematic dataset profiling.\\
 \hline
 \end{longtable}
+
+Table~\ref{tab:literature_review} summarizes the main findings, techniques, limitations, and relevance of previous studies. The review motivates the combination of scalable Spark processing, data-quality profiling, historical comparison, and behavioral anomaly detection in the proposed system.
+
+\section{Literature Review Summary}
+
+The reviewed studies establish four foundations for this project. Data-profiling research emphasizes systematic discovery of schema, completeness, and structural properties. Data-quality research treats quality as multidimensional rather than as a single missing-value measure. Outlier-detection research shows that statistical methods are useful for identifying unusual observations, but also warns that no single detector is universally suitable. Spark research provides the distributed processing foundation required for large-scale DataFrame operations.
+
+The main limitation identified across the literature is the separation of these capabilities. Profiling, outlier detection, historical comparison, and behavioral monitoring are often implemented as separate tasks. The proposed system addresses this gap by combining scalable PySpark profiling, transparent health scoring, historical behavioral fingerprints, Spark ML KMeans anomaly detection, and Streamlit visualization in one workflow. MongoDB Atlas extends the workflow by retaining uploaded health reports as documents. The project therefore contributes an integrated monitoring prototype rather than claiming a universal anomaly-detection solution.
 
 
 \section{Gaps in Existing Technology}
@@ -197,6 +234,7 @@ The proposed workflow consists of the following stages:
     \caption{System Architecture of the Data Fingerprinting System}
     \label{fig:data_fingerprint_architecture}
 \end{figure}
+Figure~\ref{fig:data_fingerprint_architecture} illustrates the system architecture, showing the relationship between PySpark processing, Spark ML anomaly detection, Streamlit presentation, and MongoDB Atlas report persistence.
 \section{Key Highlights}
 \begin{itemize}
     \item \textbf{Dataset profiling:} Summarises dataset dimensions, schema, data types, missing values, duplicates, and numerical statistics.
@@ -216,7 +254,7 @@ The proposed workflow consists of the following stages:
     \caption{Workflow of the Data Fingerprinting System}
     \label{fig:data_fingerprint_flowchart}
 \end{figure}
-The flowchart 3.2 represents the workflow of the Data Fingerprinting System. The Amazon 2022 dataset is processed using PySpark, while user datasets can be uploaded through Streamlit. The system performs data profiling, detects missing values, duplicates, outliers, and schema drift, and calculates a Data Health Score. Weekly behavioral features are then standardized and grouped using Spark ML KMeans to generate anomaly scores. Uploaded reports can be stored in MongoDB Atlas, and the analysis results are displayed on the Streamlit dashboard for monitoring dataset quality and identifying changes over time.
+Figure~\ref{fig:data_fingerprint_flowchart} illustrates the workflow of the Data Fingerprinting System. The Amazon 2022 dataset is processed using PySpark, while user datasets can be uploaded through Streamlit. The system performs data profiling, detects missing values, duplicates, outliers, and schema drift, and calculates a Data Health Score. Weekly behavioral features are then standardized and grouped using Spark ML KMeans to generate anomaly scores. Uploaded reports can be stored in MongoDB Atlas, and the analysis results are displayed on the Streamlit dashboard for monitoring dataset quality and identifying changes over time.
 
 
 % ============================================================
@@ -273,7 +311,6 @@ The dataset is suitable because its transaction records support structured-data 
 \begin{table}[H]
 \centering
 
-\label{tab:online_retail_attributes}
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|p{3.0cm}|p{9.5cm}|}
 \hline
@@ -297,7 +334,10 @@ Survey ResponseID & Survey-response field used only as response diversity; it is
 \hline
 \end{tabular}
 \caption{Description of Attributes in the Amazon 2022 Purchase Dataset}
+\label{tab:amazon_attributes}
 \end{table}
+
+Table~\ref{tab:amazon_attributes} describes the eight monitored attributes used by the Amazon 2022 profiling and behavioral-monitoring pipeline.
 
 
 
@@ -369,6 +409,19 @@ The Data Fingerprinting and Behavioral Drift Monitoring System analyzes genuine 
 \clearpage
 
 \clearpage
+\section{Dataset Details and Experimental Environment}
+
+The primary dataset contains 442,230 genuine Amazon 2022 purchase records and eight monitored features. It covers the period from 2022-01-01 to 2022-12-31 and is stored in CSV/Parquet-compatible form for processing. The dataset has no supervised target label or class variable; therefore, class-distribution analysis is not applicable. Instead, the system uses weekly behavioral observations and unsupervised anomaly classifications.
+
+The monthly profiles report 32,604 missing entries and 2,363 duplicate records across the 2022 batches. Missing values are evaluated per column, while duplicates are detected using exact-row comparison. Numerical fields are summarized using count, mean, standard deviation, minimum, and maximum. The IQR procedure is applied to suitable numerical fields, while constant fields are skipped when a meaningful IQR cannot be calculated.
+
+Preprocessing includes schema detection, date and numerical type handling, null-safe aggregation, duplicate counting, monthly and weekly batch construction, and behavioral feature extraction. The eleven behavioral features are standardized before Spark ML KMeans clustering. Since the ML task is unsupervised, there is no train-validation-test split and no accuracy or F1 score is claimed. The model is evaluated using anomaly-distance scores, the configured 95th-percentile prototype threshold, and inspection of the resulting weekly classifications.
+
+The experimental environment uses Python, PySpark 4.2.0, Apache Spark DataFrames, Spark MLlib, Streamlit, Parquet, CSV, and MongoDB Atlas. The dashboard is used to trigger the ML model and display its results. Cloudera and Hadoop/HDFS are explicitly outside the current implementation and no experimental results are claimed for them.
+
+The dataset characteristics and experimental conditions described above are summarized in Table~\ref{tab:health_results} later in this chapter, while the processing architecture is shown in Figure~\ref{fig:data_fingerprint_architecture}.
+
+\clearpage
 \section{Dataset Fingerprint Generation}
 
 Dataset fingerprinting summarizes a dataset's structure and quality characteristics, including record count, columns, data types, missing values, duplicates, and numerical statistics. This profile serves as a reference for dataset inspection and comparison.
@@ -379,6 +432,7 @@ Dataset fingerprinting summarizes a dataset's structure and quality characterist
     \caption{Dataset Fingerprint Generation}
     \label{fig:fingerprint_result}
 \end{figure}
+Figure~\ref{fig:fingerprint_result} shows the generated dataset fingerprint, including structural characteristics and selected quality indicators.
 
 
 The generated fingerprint provides a consolidated overview of the dataset's structure and quality indicators, supporting further inspection and comparison.
@@ -394,6 +448,7 @@ Data-quality assessment identifies missing values, duplicate records, and unusua
     \caption{Data Quality Assessment and Anomaly Detection}
     \label{fig:anomaly_detection}
 \end{figure}
+Figure~\ref{fig:anomaly_detection} presents the data-quality and anomaly-detection output, including missing values, duplicates, and potential numerical issues.
 
 
 The assessment summarizes dataset completeness, duplicate records, and potential numerical outliers, helping identify areas that may need attention.
@@ -411,6 +466,7 @@ The Interquartile Range (IQR) method identifies potential outliers in numerical 
     \caption{IQR-Based Outlier Detection}
     \label{fig:iqr_outliers}
 \end{figure}
+Figure~\ref{fig:iqr_outliers} illustrates the IQR-based outlier calculation and the interpretation of flagged numerical observations.
 
 
 IQR-based detection highlights numerical values that fall outside the calculated bounds. These observations are flagged for further examination, as an outlier does not necessarily indicate an error in the dataset.
@@ -427,6 +483,7 @@ The Data Health Score combines selected data-quality indicators, such as missing
     \caption{Data Health Score and Dashboard}
     \label{fig:health_score}
 \end{figure}
+Figure~\ref{fig:health_score} shows how the Data Health Score is presented together with the supporting quality metrics.
 
 The score provides a concise summary of the selected quality indicators, while the dashboard allows users to review the score alongside the dataset statistics and detected issues.
 \clearpage
@@ -440,6 +497,7 @@ The Data Health Score provides an overall assessment of dataset quality by combi
     \caption{Dashboard of the System}
     \label{fig:dashboard_system}
 \end{figure}
+Figure~\ref{fig:dashboard_system} presents the integrated Streamlit dashboard used to inspect the Amazon monitoring results and uploaded-dataset analysis.
 
 The dashboard presents the calculated health score along with dataset statistics and identified data-quality issues. This enables users to assess the condition of the dataset, identify potential problems, and understand the overall data quality based on the scoring rules implemented in the system.
 
@@ -469,7 +527,10 @@ Output & Weekly cluster, anomaly score, classification, and influential feature\
 \hline
 \end{tabular}
 \caption{Spark ML Behavioral Anomaly Detection Configuration}
+\label{tab:spark_ml_configuration}
 \end{table}
+
+Table~\ref{tab:spark_ml_configuration} summarizes the features, algorithm, scoring method, threshold, and outputs of the Spark ML implementation.
 
 The ML result is displayed through a dedicated dashboard action, allowing the evaluator to run the model and inspect the anomaly score for every weekly observation. This provides a learned analytical output in addition to the deterministic data-quality calculations and historical drift rules.
 
@@ -494,7 +555,10 @@ Alert severity & HIGH\\
 \hline
 \end{tabular}
 \caption{Existing Behavioral Drift Demonstration Result}
+\label{tab:drift_demo}
 \end{table}
+
+Table~\ref{tab:drift_demo} records the unchanged default behavioral-drift demonstration output used to verify the original monitoring logic.
 
 
 
@@ -504,18 +568,17 @@ Alert severity & HIGH\\
 \section{Summary of Dataset Health Results}
 
 
-Table 6.1 presents a summary of the dataset dimensions, data-quality indicators, schema changes, and overall Data Health Score. These parameters provide an overview of the dataset's structural characteristics and quality status, enabling a consolidated assessment of its suitability for further analysis.
+Table~\ref{tab:health_results} presents a summary of the dataset dimensions, data-quality indicators, schema changes, and overall Data Health Score. These parameters provide an overview of the dataset's structural characteristics and quality status, enabling a consolidated assessment of its suitability for further analysis.
 
 
 
 \begin{table}[H]
 \centering
 
-\label{tab:health_results}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|p{6.0cm}|p{6.2cm}|}
 \hline
-\textbf{Evaluation Parameter} & \textbf{Illustrative Result}\\
+\textbf{Evaluation Parameter} & \textbf{Observed Project Result}\\
 \hline
 Dataset Dimensions & 442,230 rows and 8 columns\\
 \hline
@@ -531,6 +594,7 @@ Data Health Score & 85/100 -- Warning for the monthly profiles\\
 \hline
 \end{tabular}
 \caption{ Summary of Dataset Health Results}
+\label{tab:health_results}
 \end{table}
 
 
